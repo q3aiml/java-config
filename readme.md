@@ -1,6 +1,8 @@
 java-config
 ===========
 
+[![Build Status](https://travis-ci.org/q3aiml/java-config.svg?branch=master)](https://travis-ci.org/q3aiml/java-config)
+
 Light java configuration inspired by Netflix's archaius.
 
 Tries to:
