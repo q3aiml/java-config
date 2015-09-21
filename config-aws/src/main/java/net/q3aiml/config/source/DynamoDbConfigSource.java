@@ -18,10 +18,17 @@ public class DynamoDbConfigSource implements PollingConfigSource {
     protected String tableName;
     protected String keyAttributeName = "key";
     protected String valueAttributeName = "value";
+    protected ItemFilter itemFilter;
 
     public DynamoDbConfigSource(AmazonDynamoDB dynamo, String tableName) {
         this.dynamo = dynamo;
         this.tableName = tableName;
+    }
+
+    public DynamoDbConfigSource(AmazonDynamoDB dynamo, String tableName, ItemFilter itemFilter) {
+        this.dynamo = dynamo;
+        this.tableName = tableName;
+        this.itemFilter = itemFilter;
     }
 
     @Override
@@ -40,6 +47,10 @@ public class DynamoDbConfigSource implements PollingConfigSource {
 
     protected void handleItems(List<Map<String, AttributeValue>> items, ImmutableMap.Builder<String, String> results) {
         for (Map<String, AttributeValue> item : items) {
+            if (itemFilter != null && !itemFilter.includeItem(item)) {
+                continue;
+            }
+
             AttributeValue keyAttribute = item.get(keyAttributeName);
             AttributeValue valueAttribute = item.get(valueAttributeName);
             if (keyAttribute == null) {
@@ -61,6 +72,11 @@ public class DynamoDbConfigSource implements PollingConfigSource {
                 ", keyAttributeName='" + keyAttributeName + '\'' +
                 ", valueAttributeName='" + valueAttributeName + '\'' +
                 ", dynamo=" + dynamo +
+                ", itemFilter=" + itemFilter +
                 '}';
+    }
+
+    public interface ItemFilter {
+        boolean includeItem(Map<String, AttributeValue> item);
     }
 }

@@ -82,6 +82,36 @@ public class DynamoDbConfigSourceTest {
     }
 
     @Test
+    public void itemFilterTest() {
+        DynamoDbConfigSource.ItemFilter itemFilter = mock(DynamoDbConfigSource.ItemFilter.class);
+        source = new DynamoDbConfigSource(client, tableName, itemFilter);
+        ImmutableMap<String, AttributeValue> item1 = ImmutableMap.of(
+                "key", new AttributeValue().withS("item"),
+                "value", new AttributeValue().withS("value"),
+                "filter", new AttributeValue().withS("match")
+        );
+        ImmutableMap<String, AttributeValue> item2 = ImmutableMap.of(
+                "key", new AttributeValue().withS("item2"),
+                "value", new AttributeValue().withS("value2"),
+                "filter", new AttributeValue().withS("nomatch")
+        );
+        ImmutableMap<String, AttributeValue> item3 = ImmutableMap.of(
+                "key", new AttributeValue().withS("item3"),
+                "value", new AttributeValue().withS("value3")
+        );
+        when(itemFilter.includeItem(item1)).thenReturn(true);
+        when(itemFilter.includeItem(item3)).thenReturn(true);
+
+        ImmutableMap.Builder<String, String> results = ImmutableMap.builder();
+        source.handleItems(ImmutableList.<Map<String, AttributeValue>>of(item1, item2, item3), results);
+
+        assertEquals(ImmutableMap.of(
+                "item", "value",
+                "item3", "value3"
+        ), results.build());
+    }
+
+    @Test
     public void pollResultsInvalidItemNoValueTest() {
         ScanResult firstResult = new ScanResult();
         firstResult.setItems(ImmutableList.<Map<String, AttributeValue>>of(ImmutableMap.of(
