@@ -12,7 +12,7 @@
     <parent>
         <artifactId>facebook-oss-pom</artifactId>
         <groupId>com.facebook</groupId>
-        <version>11</version>
+        <version>12</version>
     </parent>
 
     <modules>
