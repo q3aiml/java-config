@@ -24,6 +24,7 @@
         <project.build.targetJdk>1.7</project.build.targetJdk>
 
         <fb.check.skip-license>true</fb.check.skip-license>
+        <fb.check.fail-dependency-version-check>false</fb.check.fail-dependency-version-check>
 
         <dep.slf4j.version>1.7.10</dep.slf4j.version>
         <dep.joda.version>2.7</dep.joda.version>
